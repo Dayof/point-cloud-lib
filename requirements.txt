@@ -1,0 +1,7 @@
+python-pcl==0.3.0rc1
+Cython==0.29.19
+matplotlib==3.2.1
+numpy==1.18.4
+jupyter==1.0.0
+notebook==6.0.3
+tqdm==4.46.0
