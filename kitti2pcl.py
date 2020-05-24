@@ -4,9 +4,10 @@ from tqdm import tqdm
 import subprocess
 
 BASE_PATH = os.getenv('BASE_PATH', False)
-VELODYNE_PATH = os.path.join(BASE_PATH, 'data')
-PLY_PATH = os.path.join(BASE_PATH, 'data_ply')
-PCD_PATH = os.path.join(BASE_PATH, 'data_pcd')
+VELODYNE_PATH = os.path.join(BASE_PATH, 'velodyne_points')
+TXT_PATH = os.path.join(VELODYNE_PATH, 'data')
+PLY_PATH = os.path.join(VELODYNE_PATH, 'data_ply')
+PCD_PATH = os.path.join(VELODYNE_PATH, 'data_pcd')
 
 ply_format_template = lambda v: f'ply\nformat ascii 1.0\nelement vertex {v}\n'\
                                  'property float x\nproperty float y\n'\
@@ -19,11 +20,17 @@ def check_create_folders():
     if not os.path.exists(PCD_PATH):
         os.mkdir(PCD_PATH)
 
+def save_number_vtxs():
+    nr = len(os.listdir(TXT_PATH))
+    nr_file_path = os.path.join(BASE_PATH, 'vtx.txt')
+    with open(nr_file_path, 'w') as f:
+        f.write(str(nr))
+
 def txt2ply():
     print('Converting txt to ply...')
 
-    for f in tqdm(os.listdir(VELODYNE_PATH)):
-        file_path = os.path.join(VELODYNE_PATH, f)
+    for f in tqdm(os.listdir(TXT_PATH)):
+        file_path = os.path.join(TXT_PATH, f)
 
         num_lines = 0
         with open(file_path, 'r') as of:
@@ -62,6 +69,7 @@ def start():
         print('Please set the BASE_PATH first.')
         quit()
     check_create_folders()
+    save_number_vtxs()
     txt2ply()
     ply2pcd()
 

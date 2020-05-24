@@ -16,7 +16,7 @@ Project to generate a global points cloud from LIDAR data.
 ## Setup
 
 ```bash
-$ export BASE_PATH="[YOUR_VELODYNE_FULLPATH]"
+$ export BASE_PATH="[YOUR_BASE_PATH]"  # e.g. /home/user/data/2011_09_26/2011_09_26_drive_0001_extract
 $ python3 -m venv venv
 $ . venv/bin/activate
 ```
@@ -24,12 +24,13 @@ $ . venv/bin/activate
 ## Run
 
 ```bash
-$ python kitti_to_pcl.py
+$ python kitti2pcl.py  # transform all kitti txt to pcl data format
+$ python kitti_struct.py  # get lat and lon from timestamps from velodyne's data
 ```
 
 ## File Structure
 
-- Before running `kitti_to_pcl`:
+- Before running `kitti2pcl`:
 
 ```bash
 └── [DATE]
@@ -61,11 +62,12 @@ $ python kitti_to_pcl.py
             └── data
 ```
 
-- After running `kitti_to_pcl`:
+- After running `kitti2pcl`:
 
 ```bash
 └── [DATE]
     ├── [DATE]_drive_0001_extract
+    │   ├── vtx.txt  # total vertexes from velodyne
     │   ├── image_00
     │   │   └── data
     │   ├── image_01
@@ -77,9 +79,9 @@ $ python kitti_to_pcl.py
     │   ├── oxts
     │   │   └── data
     │   └── velodyne_points
-    │       ├── data
-    │       ├── data_pcd
-    │       └── data_ply
+    │       ├── data  # original data points
+    │       ├── data_pcd  # kitti data in pcd format 
+    │       └── data_ply  # kitti data in ply format
     └── [DATE]_drive_0001_sync
         ├── image_00
         │   └── data
