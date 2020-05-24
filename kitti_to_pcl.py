@@ -3,7 +3,7 @@ import shutil
 from tqdm import tqdm
 import subprocess
 
-BASE_PATH = '/home/dayoff/Documents/TCC/data/2011_09_26/2011_09_26_drive_0001_extract/velodyne_points'
+BASE_PATH = os.getenv('BASE_PATH', False)
 VELODYNE_PATH = os.path.join(BASE_PATH, 'data')
 PLY_PATH = os.path.join(BASE_PATH, 'data_ply')
 PCD_PATH = os.path.join(BASE_PATH, 'data_pcd')
@@ -58,6 +58,9 @@ def ply2pcd():
     print('Finished.')
 
 def start():
+    if not BASE_PATH:
+        print('Please set the BASE_PATH first.')
+        quit()
     check_create_folders()
     txt2ply()
     ply2pcd()
