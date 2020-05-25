@@ -6,3 +6,4 @@ jupyter==1.0.0
 notebook==6.0.3
 tqdm==4.46.0
 haversine==2.2.0
+open3d==0.10.0.0
