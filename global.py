@@ -77,44 +77,44 @@ def start():
     all_files = sorted(os.listdir(PCD_PATH))
     total_files = len(all_files)
     print('Total files :', total_files)
-    for nr in range(total_files):
-        print(f'------- GENERATING GLOBAL WITH {nr} FILES -------')
-        pcds_down = load_point_clouds(all_files, nr, voxel_size)
-        # o3d.visualization.draw_geometries(pcds_down)
-        
-        print("Full registration ...")
-        max_correspondence_distance_coarse = voxel_size * 15
-        max_correspondence_distance_fine = voxel_size * 1.5
-        with o3d.utility.VerbosityContextManager(o3d.utility.VerbosityLevel.Debug) as cm:
-            pose_graph = full_registration(pcds_down,
-                                        max_correspondence_distance_coarse,
-                                        max_correspondence_distance_fine)
-        
-        print("Optimizing PoseGraph ...")
-        option = o3d.registration.GlobalOptimizationOption(
-            max_correspondence_distance=max_correspondence_distance_fine,
-            edge_prune_threshold=0.25,
-            reference_node=0)
-        with o3d.utility.VerbosityContextManager(o3d.utility.VerbosityLevel.Debug) as cm:
-            o3d.registration.global_optimization(
-                pose_graph, o3d.registration.GlobalOptimizationLevenbergMarquardt(),
-                o3d.registration.GlobalOptimizationConvergenceCriteria(), option)
+    # for nr in range(total_files):
+    print(f'------- GENERATING GLOBAL WITH {total_files} FILES -------')
+    pcds_down = load_point_clouds(all_files, total_files, voxel_size)
+    # o3d.visualization.draw_geometries(pcds_down)
+    
+    print("Full registration ...")
+    max_correspondence_distance_coarse = voxel_size * 15
+    max_correspondence_distance_fine = voxel_size * 1.5
+    with o3d.utility.VerbosityContextManager(o3d.utility.VerbosityLevel.Debug) as cm:
+        pose_graph = full_registration(pcds_down,
+                                    max_correspondence_distance_coarse,
+                                    max_correspondence_distance_fine)
+    
+    print("Optimizing PoseGraph ...")
+    option = o3d.registration.GlobalOptimizationOption(
+        max_correspondence_distance=max_correspondence_distance_fine,
+        edge_prune_threshold=0.25,
+        reference_node=0)
+    with o3d.utility.VerbosityContextManager(o3d.utility.VerbosityLevel.Debug) as cm:
+        o3d.registration.global_optimization(
+            pose_graph, o3d.registration.GlobalOptimizationLevenbergMarquardt(),
+            o3d.registration.GlobalOptimizationConvergenceCriteria(), option)
 
-        print("Transform points and display")
-        for point_id in range(len(pcds_down)):
-            print(pose_graph.nodes[point_id].pose)
-            pcds_down[point_id].transform(pose_graph.nodes[point_id].pose)
-        # o3d.visualization.draw_geometries(pcds_down)
+    print("Transform points and display")
+    for point_id in range(len(pcds_down)):
+        print(pose_graph.nodes[point_id].pose)
+        pcds_down[point_id].transform(pose_graph.nodes[point_id].pose)
+    # o3d.visualization.draw_geometries(pcds_down)
 
-        pcds = load_point_clouds(all_files, nr, voxel_size)
-        pcd_combined = o3d.geometry.PointCloud()
-        
-        for point_id in range(len(pcds)):
-            pcds[point_id].transform(pose_graph.nodes[point_id].pose)
-            pcd_combined += pcds[point_id]
-        pcd_combined_down = pcd_combined.voxel_down_sample(voxel_size=voxel_size)
-        o3d.io.write_point_cloud(f"multiway_registration_{len(pcds)}.pcd", pcd_combined_down)
-        # o3d.visualization.draw_geometries([pcd_combined_down])
+    pcds = load_point_clouds(all_files, total_files, voxel_size)
+    pcd_combined = o3d.geometry.PointCloud()
+    
+    for point_id in range(len(pcds)):
+        pcds[point_id].transform(pose_graph.nodes[point_id].pose)
+        pcd_combined += pcds[point_id]
+    pcd_combined_down = pcd_combined.voxel_down_sample(voxel_size=voxel_size)
+    o3d.io.write_point_cloud(f"multiway_registration_{len(pcds)}.pcd", pcd_combined_down)
+    # o3d.visualization.draw_geometries([pcd_combined_down])
 
 if __name__ == "__main__":
     start()

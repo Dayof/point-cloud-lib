@@ -8,7 +8,7 @@ VELODYNE_PATH = os.path.join(BASE_PATH, 'velodyne_points')
 PCD_PATH = os.path.join(VELODYNE_PATH, 'data_pcd')
   
 def test_plot():
-    visu.plot('multiway_registration.pcd')
+    visu.plot('multiway_registration_111.pcd')
 
 def preprocess_point_cloud(pcd, voxel_size):
     print(":: Downsample with a voxel size %.3f." % voxel_size)
