@@ -35,10 +35,11 @@
     - People/Animals (3D): 
         - The peopleremover – removing dynamic objectsfrom 3D point cloud data by traversing a voxel occupancy grid: https://robotik.informatik.uni-wuerzburg.de/telematics/download/icra2018.pdf
 
-- Object Tracking: http://www.cvlibs.net/datasets/kitti/eval_tracking.php
+- Tracking: 
+    - Multi-Object: http://www.cvlibs.net/datasets/kitti/eval_tracking.php
 
 - Segmentation:
-    - Object: http://www.cvlibs.net/datasets/kitti/eval_mots.php
+    - Multi-Object: http://www.cvlibs.net/datasets/kitti/eval_mots.php
     - Semantic / Scene Parsing: 
         - Kitti: http://www.cvlibs.net/datasets/kitti/eval_semseg.php?benchmark=semantics2015
         - ApolloScape: http://apolloscape.auto/scene.html
