@@ -137,5 +137,6 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
-#Pycharm files
-.idea/
+# IDE files
+.idea
+.vscode

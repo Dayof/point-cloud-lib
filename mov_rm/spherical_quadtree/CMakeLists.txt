@@ -1,0 +1,2 @@
+add_library(spherical_quadtree spherical_quadtree.cc)
+set_property(TARGET spherical_quadtree PROPERTY POSITION_INDEPENDENT_CODE 1)
