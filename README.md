@@ -1,6 +1,6 @@
-# Global Points Cloud
+# Point Cloud Lib for Motion Detection
 
-Project to generate a global points cloud from LIDAR data.
+Detect object's motion on point clouds captured from LIDAR.
 
 ## Data
 
@@ -24,13 +24,13 @@ $ . venv/bin/activate
 ## Run
 
 ```bash
-$ python kitti2pcl.py  # transform all kitti txt to pcl data format
+$ python kitti2ply2pcd.py  # transform all kitti format to pcd data format
 $ python kitti_struct.py  # get lat and lon from timestamps from velodyne's data
 ```
 
 ## File Structure
 
-- Before running `kitti2pcl`:
+- Before running `kitti2ply2pcd`:
 
 ```bash
 └── [DATE]
@@ -62,7 +62,7 @@ $ python kitti_struct.py  # get lat and lon from timestamps from velodyne's data
             └── data
 ```
 
-- After running `kitti2pcl`:
+- After running `kitti2ply2pcd`:
 
 ```bash
 └── [DATE]

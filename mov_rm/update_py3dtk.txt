@@ -1,5 +1,0 @@
-change code @ /home/dayoff/apps/3DTK
-cd /home/dayoff/apps/3DTK/build
-make -j 8
-rm -rf venv/lib/python3.8/site-packages/py3dtk.so venv/lib64/python3.8/site-packages/py3dtk.so
-cp /home/dayoff/apps/3DTK/lib/py3dtk.so venv/lib/python3.8/site-packages/; cp /home/dayoff/apps/3DTK/lib/py3dtk.so venv/lib64/python3.8/site-packages/
