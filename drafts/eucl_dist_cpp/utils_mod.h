@@ -1,16 +1,22 @@
-#include <cstdlib>
+#include <algorithm>
+#include <iterator>
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <cstdlib>
+#include <vector>
 #include <regex>
+
 
 using namespace std;
 
+
 template <typename T>
 struct PointCloud {
+
     struct Point { T x, y, z, intensity; };
 
-    std::vector<Point> pts;
+    vector< Point > pts;
 
     // Must return the number of data points
     inline size_t kdtree_get_point_count() const { return pts.size(); }
@@ -64,10 +70,52 @@ void readPointCloud(PointCloud<T> &point, string infile) {
     for (size_t i = 0; input.good() && !input.eof(); i++) {
         getline(input, line);   
         istringstream in(line);
-        in >> point.pts[i].x >> point.pts[i].y >> point.pts[i].z >> point.pts[i].intensity;
+        if (!input.eof()) in >> point.pts[i].x >> point.pts[i].y >> point.pts[i].z >> point.pts[i].intensity;
     }
     input.close();
 
     cout << "Loaded PC of size " << point.kdtree_get_point_count() 
          << " from file " << infile << endl;
+}
+
+template <typename T>
+vector <int> getPointsInnov(PointCloud<T> &point, vector <int> &intersec_vec) {
+    vector <int> total_vec, diff;
+
+    for (size_t i = 0; i <= point.kdtree_get_point_count(); ++i)
+        total_vec.push_back(i);
+
+    set_difference(total_vec.begin(), total_vec.end(),
+                   intersec_vec.begin(), intersec_vec.end(),
+                   inserter(diff, diff.begin()));
+
+    return diff;
+}
+
+template <typename T>
+void savePointCloud(PointCloud<T> &point, vector <int> &intersec_vec, string outfile) {
+    fstream output(outfile.c_str(), ios::out | ios::binary);
+    if (!output.good()) {
+        cerr << "Could not read file: " << outfile << endl;
+        exit(EXIT_FAILURE);
+    }
+
+    output << "ply" << endl;
+    output << "format ascii 1.0" << endl;
+    output << "element vertex " << intersec_vec.size() << endl;
+    output << "property float x" << endl;
+    output << "property float y" << endl;
+    output << "property float z" << endl;
+    output << "property float reflect_coeff" << endl;
+    output << "end_header" << endl;
+
+    for ( auto idx: intersec_vec ) {
+        output << point.kdtree_get_pt(idx, 0) << " " 
+                << point.kdtree_get_pt(idx, 1) << " "
+                << point.kdtree_get_pt(idx, 2) << " " 
+                << point.kdtree_get_pt(idx, 3) << endl;
+    }
+
+    output.close();
+
 }
