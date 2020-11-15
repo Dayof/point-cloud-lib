@@ -11,9 +11,9 @@ COLORS = {'green': [0, 255, 0], 'red': [255, 0, 0], 'blue': [0, 0, 255],
 point_clouds = []
 
 
-def load_point_cloud(filename, idx, color='blue'):
+def load_point_cloud(filename, color='blue', base='innovations'):
     # get first point cloud, assign it with a blue color
-    pc_path = DATA_PATH / 'innovations' / filename
+    pc_path = DATA_PATH / base / filename
     print('Collecting pc: ', pc_path)
     pcd = o3d.io.read_point_cloud(str(pc_path), format='ply')
     pcd_size = len(np.asarray(pcd.points))
@@ -87,5 +87,7 @@ def show_pc(pc_list):
 
 
 if __name__ == "__main__":
-    pc = load_point_cloud('0_1.ply', 0, 'blue')
-    show_pc([pc])
+    pc_1 = load_point_cloud('0000000000.ply', 'red', 'kitti')
+    pc_2 = load_point_cloud('0000000001.ply', 'green', 'kitti')
+    pc_innov = load_point_cloud('0_1.ply', 'black')
+    show_pc([pc_1, pc_2, pc_innov])

@@ -9,7 +9,7 @@ using namespace std;
 using namespace nanoflann;
 
 template <typename num_t>
-void kdtree_demo() {
+void kdtree_search() {
 	PointCloud<num_t> cloud_1, cloud_2;
 	string infile_1 = "/home/dayoff/codes/point_cloud_lib/data/kitti/0000000000.ply";
 	string infile_2 = "/home/dayoff/codes/point_cloud_lib/data/kitti/0000000001.ply";
@@ -27,40 +27,15 @@ void kdtree_demo() {
 		3 /* dim */
 		> my_kd_tree_t;
 
-	my_kd_tree_t index_pc1(3 /*dim*/, cloud_1, KDTreeSingleIndexAdaptorParams(10 /* max leaf */) );
-	index_pc1.buildIndex();
-
 	my_kd_tree_t index_pc2(3 /*dim*/, cloud_2, KDTreeSingleIndexAdaptorParams(10 /* max leaf */) );
 	index_pc2.buildIndex();
-
-	// const num_t query_pt[3] = {0.5, 0.5, 0.5};
-
-	// ----------------------------------------------------------------
-	// knnSearch():  Perform a search for the N closest points
-	// ----------------------------------------------------------------
-	// {
-	// 	size_t num_results = 5;
-	// 	vector<size_t> ret_index(num_results);
-	// 	vector<num_t> out_dist_sqr(num_results);
-
-	// 	num_results = index.knnSearch(&query_pt[0], num_results, &ret_index[0], &out_dist_sqr[0]);
-		
-	// 	// In case of less points in the tree than requested:
-	// 	ret_index.resize(num_results);
-	// 	out_dist_sqr.resize(num_results);
-
-	// 	cout << "knnSearch(): num_results=" << num_results << "\n";
-	// 	for (size_t i = 0; i < num_results; i++)
-	// 		cout << "idx["<< i << "]=" << ret_index[i] << " dist["<< i << "]=" << out_dist_sqr[i] << endl;
-	// 	cout << "\n";
-	// }
 
 	// ----------------------------------------------------------------
 	// radiusSearch(): Perform a search for the points within search_radius
 	// ----------------------------------------------------------------
 	vector < int > intersec_idx, innov_point_cloud;
 	{
-		float THREASHOLD = 0.5;
+		float THREASHOLD = 0.3;
 		const num_t search_radius = static_cast<num_t>(THREASHOLD);
 		vector<pair<size_t,num_t> > ret_matches;
 
@@ -99,7 +74,7 @@ void kdtree_demo() {
 	cout << "Program finished." << endl;
 }
 
- int main() {
-	kdtree_demo<double>();
+int main() {
+	kdtree_search<double>();
 	return 0;
 }
