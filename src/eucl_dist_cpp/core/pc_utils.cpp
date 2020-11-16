@@ -1,44 +1,15 @@
+#include "pc_utils.hpp"
+
 #include <algorithm>
 #include <iterator>
-#include <iostream>
 #include <fstream>
 #include <sstream>
-#include <cstdlib>
-#include <vector>
 #include <regex>
-
 
 using namespace std;
 
 
-template <typename T>
-struct PointCloud {
-
-    struct Point { T x, y, z, intensity; };
-
-    vector< Point > pts;
-
-    // Must return the number of data points
-    inline size_t kdtree_get_point_count() const { return pts.size(); }
-
-    // Returns the dim'th component of the idx'th point in the class:
-    // Since this is inlined and the "dim" argument is typically an immediate value, the
-    //  "if/else's" are actually solved at compile time.
-    inline T kdtree_get_pt(const size_t idx, const size_t dim) const {
-        if (dim == 0) return pts[idx].x;
-        else if (dim == 1) return pts[idx].y;
-        else return pts[idx].z;
-    }
-
-    // Optional bounding-box computation: return false to default to a standard bbox computation loop.
-    //   Return true if the BBOX was already computed by the class and returned in "bb" so it can be avoided to redo it again.
-    //   Look at bb.size() to find out the expected dimensionality (e.g. 2 or 3 for point clouds)
-    template <class BBOX>
-    bool kdtree_get_bbox(BBOX & /* bb */) const { return false; }
-};
-
-template <typename T>
-void readPointCloud(PointCloud<T> &point, string infile) {
+void readPointCloud(PointCloud &point, string infile) {
     fstream input(infile.c_str(), ios::in | ios::binary);
     if (!input.good()) {
         cerr << "Could not read file: " << infile << endl;
@@ -78,8 +49,8 @@ void readPointCloud(PointCloud<T> &point, string infile) {
          << " from file " << infile << endl;
 }
 
-template <typename T>
-vector <int> getPointsInnov(PointCloud<T> &point, vector <int> &intersec_vec) {
+
+vector <int> getPointsInnov(PointCloud &point, vector <int> &intersec_vec) {
     vector <int> total_vec, diff;
 
     for (size_t i = 0; i <= point.kdtree_get_point_count(); ++i)
@@ -92,8 +63,8 @@ vector <int> getPointsInnov(PointCloud<T> &point, vector <int> &intersec_vec) {
     return diff;
 }
 
-template <typename T>
-void savePointCloud(PointCloud<T> &point, vector <int> &intersec_vec, string outfile) {
+
+void savePointCloud(PointCloud &point, vector <int> &intersec_vec, string outfile) {
     fstream output(outfile.c_str(), ios::out | ios::binary);
     if (!output.good()) {
         cerr << "Could not read file: " << outfile << endl;
@@ -117,5 +88,4 @@ void savePointCloud(PointCloud<T> &point, vector <int> &intersec_vec, string out
     }
 
     output.close();
-
 }
