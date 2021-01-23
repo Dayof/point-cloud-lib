@@ -64,7 +64,25 @@ vector <int> getPointsInnov(PointCloud &point, vector <int> &intersec_vec) {
 }
 
 
-void savePointCloud(PointCloud &point, vector <int> &intersec_vec, string outfile) {
+PointCloud fromIdxToPointCloud(PointCloud &old_pc, vector<int> &ref_idx) {
+    PointCloud new_pc;
+    new_pc.pts.reserve(ref_idx.size());
+    for (size_t idx = 0; idx <= ref_idx.size(); ++idx) {
+        if (ref_idx[idx]) {
+            // cout << "point: " << idx << endl;
+            PointCloud::Point pts_vec;
+            pts_vec.x = old_pc.kdtree_get_pt(idx, 0);
+            pts_vec.y = old_pc.kdtree_get_pt(idx, 1);
+            pts_vec.z = old_pc.kdtree_get_pt(idx, 2);
+            pts_vec.intensity = old_pc.kdtree_get_pt(idx, 3);
+            new_pc.pts.push_back(pts_vec);
+        }
+    }
+    return new_pc;
+}
+
+
+void savePointCloud(PointCloud &point, string outfile) {
     fstream output(outfile.c_str(), ios::out | ios::binary);
     if (!output.good()) {
         cerr << "Could not read file: " << outfile << endl;
@@ -73,18 +91,18 @@ void savePointCloud(PointCloud &point, vector <int> &intersec_vec, string outfil
 
     output << "ply" << endl;
     output << "format ascii 1.0" << endl;
-    output << "element vertex " << intersec_vec.size() << endl;
+    output << "element vertex " << point.kdtree_get_point_count() << endl;
     output << "property float x" << endl;
     output << "property float y" << endl;
     output << "property float z" << endl;
     output << "property float reflect_coeff" << endl;
     output << "end_header" << endl;
 
-    for ( auto idx: intersec_vec ) {
-        output << point.kdtree_get_pt(idx, 0) << " " 
-                << point.kdtree_get_pt(idx, 1) << " "
-                << point.kdtree_get_pt(idx, 2) << " " 
-                << point.kdtree_get_pt(idx, 3) << endl;
+    for ( auto local_point: point.pts ) {
+        output << local_point.x << " " 
+                << local_point.y << " "
+                << local_point.z << " " 
+                << local_point.intensity << endl;
     }
 
     output.close();
