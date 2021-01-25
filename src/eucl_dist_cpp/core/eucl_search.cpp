@@ -9,7 +9,7 @@ using namespace nanoflann;
 string DATA_PATH = "/home/dayoff/codes/point_cloud_lib/data/kitti/";
 string LOCAL_PATH = "/home/dayoff/codes/point_cloud_lib/data/innovations/";
 int NZEROS = 10;
-int PC_SIZE = 1;
+int PC_SIZE = 3;
 float RADIUS_THRESHOLD = 0.2;
 
 
@@ -85,18 +85,20 @@ void saveInnov(int idx, PointCloud &pc) {
 }
 
 int main() {
-	PCQueue pc_ref;
+	PointCloud pc_ref, pc_cur, pc_innov;
 	int f_idx = 0;
-	PointCloud pc_cur = readNextPC(f_idx);
-	pc_ref.push(f_idx, pc_cur);
+	pc_ref = readNextPC(f_idx);
+	// PCQueue pc_ref;
+	// pc_ref.push(f_idx, pc_cur);
 
 	for (int idx = 1; idx <= PC_SIZE; ++idx) {
-		cout << endl << "GENERATING INNOVATION " << idx << endl;
-		PointCloud pc_cur = readNextPC(idx);
-		PointCloud pc_ref_points = pc_ref.points();
-		PointCloud pc_innov = kdtreeSearch(pc_ref_points, pc_cur);
-		//pc_ref.push(idx, pc_innov);
+		cout << endl << "GENERATING INNOVATION: " << idx << endl;
+		pc_cur = readNextPC(idx);
+		// PointCloud pc_ref_points = pc_ref.points();
+		pc_innov = kdtreeSearch(pc_ref, pc_cur);
+		// pc_ref.push(idx, pc_innov);
 		saveInnov(idx, pc_innov);
+		pc_ref = pc_innov;
 	}
 
 	cout << "Program finished." << endl;
