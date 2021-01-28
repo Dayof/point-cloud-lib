@@ -1,7 +1,15 @@
 #include "nanoflann.hpp"
 #include "pc_utils.hpp"
 
-#include <ctime>
+#include <pcl/kdtree/impl/kdtree_flann.hpp>
+#include <pcl/features/impl/normal_3d.hpp>
+#include <pcl/search/impl/organized.hpp>
+#include <pcl/search/impl/kdtree.hpp>
+#include <pcl/search/impl/search.hpp>
+#include <pcl/impl/pcl_base.hpp>
+#include <pcl/registration/icp.h>
+#include <pcl/point_types.h>
+#include <ctime>	
 
 using namespace std;
 using namespace nanoflann;
@@ -9,7 +17,7 @@ using namespace nanoflann;
 string DATA_PATH = "/home/dayoff/codes/point_cloud_lib/data/kitti/";
 string LOCAL_PATH = "/home/dayoff/codes/point_cloud_lib/data/innovations/";
 int NZEROS = 10;
-int PC_SIZE = 3;
+int PC_SIZE = 4;
 float RADIUS_THRESHOLD = 0.2;
 
 
@@ -84,6 +92,50 @@ void saveInnov(int idx, PointCloud &pc) {
 	savePointCloud(pc, outfile);
 }
 
+PointCloud pcl_to_pc(pcl::PointCloud< pcl::PointXYZ > pc_pcl) {
+	PointCloud cloud;
+	cloud.pts.reserve(pc_pcl.size());
+	for (auto point: pc_pcl) {
+		PointCloud::Point pts_vec;
+		pts_vec.x = point.x;
+		pts_vec.y = point.y;
+		pts_vec.z = point.z;
+		cloud.pts.push_back(pts_vec);
+	}
+	return cloud;
+}
+
+pcl::PointCloud< pcl::PointXYZ >::Ptr pc_to_pcl(PointCloud pc) {
+	pcl::PointCloud< pcl::PointXYZ >::Ptr cloud;
+	cloud->resize(pc.pts.size());
+
+	for (int i = 0; i < cloud->size(); ++i){
+		cloud->points[i].x = pc.pts[i].x;
+		cloud->points[i].y = pc.pts[i].y;
+		cloud->points[i].z = pc.pts[i].z;
+	}
+
+	return cloud;
+}
+
+PointCloud makeICP(PointCloud pc_ref, PointCloud pc_innov) {
+	PointCloud pc_icp_final;
+	pcl::PointCloud< pcl::PointXYZ >::Ptr pcl_pc_ref;
+	pcl::PointCloud< pcl::PointXYZ >::Ptr pcl_pc_innov;
+	*pcl_pc_ref = *pc_to_pcl(pc_ref);
+	*pcl_pc_innov = *pc_to_pcl(pc_innov);
+	pcl::IterativeClosestPoint< pcl::PointXYZ, pcl::PointXYZ > icp;
+	icp.setInputSource(pcl_pc_ref);
+	icp.setInputTarget(pcl_pc_innov);
+	pcl::PointCloud< pcl::PointXYZ > icp_final;
+	icp.align(icp_final);
+	std::cout << "has converged:" << icp.hasConverged() << " score: "
+			  << icp.getFitnessScore() << std::endl;
+	std::cout << icp.getFinalTransformation() << std::endl;
+	pc_icp_final = pcl_to_pc(icp_final);
+	return pc_icp_final;
+}
+
 int main() {
 	PointCloud pc_ref, pc_cur, pc_innov;
 	int f_idx = 0;
@@ -96,9 +148,9 @@ int main() {
 		pc_cur = readNextPC(idx);
 		// PointCloud pc_ref_points = pc_ref.points();
 		pc_innov = kdtreeSearch(pc_ref, pc_cur);
-		// pc_ref.push(idx, pc_innov);
 		saveInnov(idx, pc_innov);
-		pc_ref = pc_innov;
+		pc_ref = makeICP(pc_ref, pc_innov);
+		// pc_ref.push(idx, pc_innov);
 	}
 
 	cout << "Program finished." << endl;

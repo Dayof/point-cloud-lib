@@ -5,7 +5,7 @@ OBJ_DIR     = bin
 SRC_DIR     = core
 LIB_DIR     = lib
 
-SOURCES     = pc_utils.cpp eucl_search.cpp
+SOURCES     = pc_utils.cpp pc_encoder.cpp
 HEADERS     = nanoflann.hpp pc_utils.hpp
 OBJECTS     = $(SOURCES:.cpp=.o)
 
