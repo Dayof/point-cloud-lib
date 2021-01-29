@@ -46,7 +46,7 @@ void readPointCloud(PointCloud &point, string infile) {
     input.close();
 
     cout << "Loaded PC of size " << point.kdtree_get_point_count() 
-         << " from file " << infile << endl;
+         << " from file " << infile << endl << endl;
 }
 
 

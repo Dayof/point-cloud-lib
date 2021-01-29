@@ -86,7 +86,20 @@ def show_pc(pc_list):
 
 
 if __name__ == "__main__":
+    # pc_1 = load_point_cloud('0000000000.ply', 'kitti')
+    # pc_2 = load_point_cloud('0000000001.ply', 'kitti')
+    # pc_innov = load_point_cloud('1.ply')
+    
+    # pc_innov_1 = load_point_cloud('1.ply')
+    # pc_innov_2 = load_point_cloud('2.ply')
+    # pc_innov_3 = load_point_cloud('3.ply')
+    # pc_innov_4 = load_point_cloud('4.ply')
+    # show_pc([(pc_innov_1, 'red'), (pc_innov_2, 'green'),
+    #          (pc_innov_3, 'blue'), (pc_innov_4, 'black')])
+    
     pc_1 = load_point_cloud('0000000000.ply', 'kitti')
     pc_2 = load_point_cloud('0000000001.ply', 'kitti')
-    pc_innov = load_point_cloud('1.ply')
-    show_pc([(pc_1, 'red'), (pc_2, 'green'), (pc_innov, 'black')])
+    pc_ref_1 = load_point_cloud('innov_1.ply')
+    pc_innov_1 = load_point_cloud('ref_1.ply')
+    show_pc([(pc_1, 'red'), (pc_2, 'green'), (pc_ref_1, 'blue'),
+             (pc_innov_1, 'black')])
