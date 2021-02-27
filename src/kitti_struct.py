@@ -1,6 +1,10 @@
 import os
+import shutil
 from tqdm import tqdm
+from pathlib import Path    
 
+DATA_PATH = Path().resolve().parents[0] / 'data'
+print(DATA_PATH)
 BASE_PATH = os.getenv('BASE_PATH', False)
 VELODYNE_PATH = os.path.join(BASE_PATH, 'velodyne_points')
 OXTS_PATH = os.path.join(BASE_PATH, 'oxts')
@@ -83,6 +87,23 @@ def get_oxts_lat_long_by_timestamp(timestamps):
     filtered_timestamps = filter_by_velodyne_timestamps(lines)
     return get_lat_lon(filtered_timestamps)
 
+
+def save_oxts(kitti_struct):
+    new_oxts_path = DATA_PATH / 'oxts'
+    if os.path.exists(new_oxts_path):
+        print(str(new_oxts_path), 'already exists.')
+    else:
+        os.mkdir(new_oxts_path)
+
+    for k, v in kitti_struct.vtxs.items():
+        new_filename = f'{k}'.zfill(10) + '.txt'
+        ref_file = os.path.join(OXTS_PATH, 'data', v['ref'])
+        shutil.copy(ref_file, new_oxts_path)
+        os.rename(new_oxts_path / ref_file, new_oxts_path / new_filename)
+
+    print(f'{len(kitti_struct.vtxs)} oxts saved to folder {new_oxts_path}.')
+
+
 def start():
     if not BASE_PATH:
         print('Please set the BASE_PATH first.')
@@ -94,6 +115,7 @@ def start():
     kitti_struct.set_timestamps(timestamps)
     kitti_struct.set_metadata(get_oxts_lat_long_by_timestamp(timestamps))
     print(kitti_struct)
+    save_oxts(kitti_struct)
 
 if __name__ == "__main__":
     start()
