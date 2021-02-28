@@ -4,7 +4,6 @@ from tqdm import tqdm
 from pathlib import Path    
 
 DATA_PATH = Path().resolve().parents[0] / 'data'
-print(DATA_PATH)
 BASE_PATH = os.getenv('BASE_PATH', False)
 VELODYNE_PATH = os.path.join(BASE_PATH, 'velodyne_points')
 OXTS_PATH = os.path.join(BASE_PATH, 'oxts')
@@ -81,7 +80,7 @@ def get_oxts_lat_long_by_timestamp(timestamps):
         return all_lat_lon
 
     time_file = os.path.join(OXTS_PATH, 'timestamps.txt')
-    lines = []
+    lines = {}
     with open(time_file, 'r') as f:
         lines = {idx: format_timestamp(l) for idx, l in enumerate(f.readlines(), 1) if l.strip(' \n') != ''}
     filtered_timestamps = filter_by_velodyne_timestamps(lines)
@@ -98,8 +97,10 @@ def save_oxts(kitti_struct):
     for k, v in kitti_struct.vtxs.items():
         new_filename = f'{k}'.zfill(10) + '.txt'
         ref_file = os.path.join(OXTS_PATH, 'data', v['ref'])
+        # print(f'Copying oxt {ref_file} to {new_oxts_path}')
         shutil.copy(ref_file, new_oxts_path)
-        os.rename(new_oxts_path / ref_file, new_oxts_path / new_filename)
+        # print(f'Renaming oxt {new_oxts_path / v["ref"]} to {new_oxts_path / new_filename}')
+        os.rename(new_oxts_path / v['ref'], new_oxts_path / new_filename)
 
     print(f'{len(kitti_struct.vtxs)} oxts saved to folder {new_oxts_path}.')
 
@@ -113,7 +114,8 @@ def start():
     kitti_struct = KITTIStruct(n_vtx)
     timestamps = get_velodyne_timestamps()
     kitti_struct.set_timestamps(timestamps)
-    kitti_struct.set_metadata(get_oxts_lat_long_by_timestamp(timestamps))
+    oxts_lat_lon = get_oxts_lat_long_by_timestamp(timestamps)
+    kitti_struct.set_metadata(oxts_lat_lon)
     print(kitti_struct)
     save_oxts(kitti_struct)
 

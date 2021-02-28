@@ -7,7 +7,6 @@ import mpu
 # get data base path to collect the point clouds
 BASE = Path().resolve().parents[2]
 DATA_PATH = BASE / 'data'
-print(DATA_PATH)
 SHOW_PC = False
 COLORS = {'blue': [0, 0, 255], 'red': [255, 0, 0]}
 
@@ -41,6 +40,12 @@ def calc_haversine():
     print("Haversine Result (cm):", dist * 100000)
 
 
+def get_lat_lon():
+    DATA_PATH / 'oxts'
+
+
 if __name__ == '__main__':
     pc_1 = read_pc('0000000000.ply', COLORS['blue'])
     pc_2 = read_pc('0000000001.ply', COLORS['red'])
+    pc_1_lat_lon = get_lat_lon('0000000000')
+    pc_2_lat_lon = get_lat_lon('0000000001')
