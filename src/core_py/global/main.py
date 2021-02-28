@@ -28,10 +28,10 @@ def read_pc(pc_filename, color):
         o3d.visualization.draw_geometries([pcd])
 
 
-def calc_haversine():
+def calc_haversine(pc_1_lat_lon, pc_2_lat_lon):
     # calculate diff meters between pc 1 and pc 2 
-    lat1, lon1 = radians(49.015019172077), radians(8.4343357035849)  # pc 1
-    lat2, lon2 = radians(49.015012999213), radians(8.4343202373229)  # pc 2
+    lat1, lon1 = radians(pc_1_lat_lon[0]), radians(pc_1_lat_lon[1])  # pc 1
+    lat2, lon2 = radians(pc_2_lat_lon[0]), radians(pc_2_lat_lon[1])  # pc 2
 
     dist = mpu.haversine_distance((lat1, lon1), (lat2, lon2))
     print("Haversine Result (km):", dist)
@@ -40,12 +40,17 @@ def calc_haversine():
     print("Haversine Result (cm):", dist * 100000)
 
 
-def get_lat_lon():
-    DATA_PATH / 'oxts'
+def get_lat_lon(filename):
+    file_path = DATA_PATH / 'oxts' / filename
+    with open(file_path, 'r') as df:
+        cur_line = df.readline().split(' ')
+        lat, lon = float(cur_line[0]), float(cur_line[1])
+    return lat, lon
 
 
 if __name__ == '__main__':
     pc_1 = read_pc('0000000000.ply', COLORS['blue'])
     pc_2 = read_pc('0000000001.ply', COLORS['red'])
-    pc_1_lat_lon = get_lat_lon('0000000000')
-    pc_2_lat_lon = get_lat_lon('0000000001')
+    pc_1_lat_lon = get_lat_lon('0000000000.txt')
+    pc_2_lat_lon = get_lat_lon('0000000001.txt')
+    calc_haversine(pc_1_lat_lon, pc_2_lat_lon)
