@@ -7,7 +7,8 @@ BASE = Path().resolve().parents[1]
 DATA_PATH = BASE / 'data'
 print(DATA_PATH)
 COLORS = {'green': [0, 255, 0], 'red': [255, 0, 0], 'blue': [0, 0, 255],
-          'black': [0, 0, 0], 'yellow': [255, 255, 0]}
+          'soft_blue': [0, 96, 255], 'black': [0, 0, 0],
+          'yellow': [255, 255, 0]}
 point_clouds = []
 
 
@@ -31,7 +32,8 @@ def show_pc(pc_list):
     pc_1_color = pc_list[0][1]
     # define first point cloud color
     pc_1_size = len(np.asarray(pc_1.points))
-    np_colors = np.array([COLORS[pc_1_color] for _ in range(pc_1_size)])
+    np_colors = np.array([COLORS[pc_1_color] for _ in range(pc_1_size)]).astype(np.float) / 255.0
+    print(f'colors: {np_colors}')
     pc_1.colors = o3d.utility.Vector3dVector(np_colors)
     new_pc_list.append(pc_1)
 
@@ -46,7 +48,7 @@ def show_pc(pc_list):
         offset_pc_size = len(np.asarray(offset_pc.points))
 
         # define second point cloud color
-        np_colors = np.array([COLORS[pc_2_color] for _ in range(offset_pc_size)])
+        np_colors = np.array([COLORS[pc_2_color] for _ in range(offset_pc_size)]).astype(np.float) / 255.0
         offset_pc.colors = o3d.utility.Vector3dVector(np_colors)
         
         new_pc_list.append(offset_pc)
@@ -62,7 +64,7 @@ def show_pc(pc_list):
         offset_pc_size = len(np.asarray(offset_pc.points))
 
         # define the point cloud color
-        np_colors = np.array([COLORS[pc_3_color] for _ in range(offset_pc_size)])
+        np_colors = np.array([COLORS[pc_3_color] for _ in range(offset_pc_size)]).astype(np.float) / 255.0
         offset_pc.colors = o3d.utility.Vector3dVector(np_colors)
 
         new_pc_list.append(offset_pc)
@@ -78,7 +80,7 @@ def show_pc(pc_list):
         offset_pc_size = len(np.asarray(offset_pc.points))
 
         # define the point cloud color
-        np_colors = np.array([COLORS[pc_4_color] for _ in range(offset_pc_size)])
+        np_colors = np.array([COLORS[pc_4_color] for _ in range(offset_pc_size)]).astype(np.float) / 255.0
         offset_pc.colors = o3d.utility.Vector3dVector(np_colors)
 
         new_pc_list.append(offset_pc)
@@ -98,8 +100,21 @@ if __name__ == "__main__":
     # show_pc([(pc_innov_1, 'red'), (pc_innov_2, 'green'),
     #          (pc_innov_3, 'blue'), (pc_innov_4, 'black')])
     
-    pc_1 = load_point_cloud('0000000000.ply', 'kitti')
-    pc_2 = load_point_cloud('0000000002.ply', 'kitti')
-    pc_innov_1 = load_point_cloud('innov_2.ply')
-    pc_ref_1 = load_point_cloud('ref_1.ply')
-    show_pc([(pc_1, 'red'), (pc_innov_1, 'blue'), (pc_ref_1, 'black')])
+    # pc_1 = load_point_cloud('0000000000.ply', 'global')
+    # pc_2 = load_point_cloud('0000000001.ply', 'global')
+    # pc_3 = load_point_cloud('0000000002.ply', 'global')
+    # pc_2 = load_point_cloud('0000000110.ply', 'global')
+    
+    # pc_1 = load_point_cloud('0000000000.ply', 'kitti_ply')
+    # pc_2 = load_point_cloud('0000000001.ply', 'kitti_ply')
+    # pc_3 = load_point_cloud('0000000002.ply', 'kitti_ply')
+    # pc_4 = load_point_cloud('0000000110.ply', 'kitti_ply')
+
+    # pc_1 = load_point_cloud('0000000000.ply', 'innovation')
+    pc_1 = load_point_cloud('0000000000.ply', 'reference')
+    pc_2 = load_point_cloud('0000000001.ply', 'reference')
+    pc_3 = load_point_cloud('0000000002.ply', 'reference')
+
+    # show_pc([(pc_1, 'red'), (pc_2, 'blue')])
+    show_pc([(pc_1, 'red'), (pc_2, 'blue'), (pc_3, 'black')])
+    # show_pc([(pc_1, 'red'), (pc_2, 'blue'), (pc_3, 'black'), (pc_4, 'soft_blue')])

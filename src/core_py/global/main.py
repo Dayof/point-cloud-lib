@@ -1,16 +1,24 @@
+from pathlib import Path
+from tqdm import tqdm
 import open3d as o3d 
 import numpy as np
-from pathlib import Path
 import math
 import mpu
+import os
 
 # get data base path to collect the point clouds
 BASE = Path().resolve().parents[2]
 DATA_PATH = BASE / 'data'
+GLOBAL_PLY_PATH = DATA_PATH / 'global'
+KITTI_PLY_PATH = DATA_PATH / 'kitti_ply'
 SHOW_PC = False
 COLORS = {'green': [0, 255, 0], 'red': [255, 0, 0], 'blue': [0, 0, 255],
           'black': [0, 0, 0], 'yellow': [255, 255, 0]}
 RADIUS = 6378137  # earth radius in meters
+ply_format_template = lambda v: f'ply\nformat ascii 1.0\nelement vertex {v}\n'\
+                                 'property float x\nproperty float y\n'\
+                                 'property float z\nproperty float '\
+                                 'reflect_coeff\nend_header\n'
 
 
 def show_pc(pc_list):
@@ -77,7 +85,7 @@ def show_pc(pc_list):
 
 def read_pc(idx, color):
     pc_filename = f'{idx}'.zfill(10) + '.ply'
-    pc_path = DATA_PATH / 'kitti' / pc_filename
+    pc_path = KITTI_PLY_PATH / pc_filename
     pcd = o3d.io.read_point_cloud(str(pc_path), format='ply')
     pcd_size = len(np.asarray(pcd.points))
 
@@ -118,7 +126,7 @@ def calc_haversine(pc_1_lat_lon, pc_2_lat_lon):
 
 def calc_mercator(scale, lat_lon_alt):
     lat, lon, alt = lat_lon_alt
-    x = scale * RADIUS * ((math.pi * lon) / 180) 
+    x = - (scale * RADIUS * ((math.pi * lon) / 180))
     y = scale * RADIUS * math.log(math.tan((math.pi*(90 + lat)) / 360))
     return np.array([x, y, alt])
 
@@ -138,6 +146,7 @@ def get_rpy(idx):
     with open(file_path, 'r') as df:
         cur_line = df.readline().split(' ')
         roll, pitch, yaw = float(cur_line[3]), float(cur_line[4]), float(cur_line[4])
+    print(f'roll(rx): {roll}, pitch(ry): {pitch}, yaw(rz): {yaw}')
     return roll, pitch, yaw  # rx, ry, rz
 
 
@@ -176,10 +185,20 @@ def mult_to_one(all_pcs):
     return np.concatenate(all_pcs)
 
 
+def pc2global(idx, pc):
+    print('Saving global points to ply format...')
+    global_ply_filename = f'{idx}'.zfill(10) + '.ply'
+    global_ply_path = GLOBAL_PLY_PATH / global_ply_filename
+    o3d.io.write_point_cloud(str(global_ply_path), pc, write_ascii=True)
+    print('Saved.')
+
 if __name__ == '__main__':
     t0, scale = None, None
     all_pcs_points, all_pcs = [], []
-    for idx in range(3):
+    num_files = len(os.listdir(KITTI_PLY_PATH))
+    print(f'Processing {num_files} files...')
+    for idx in range(num_files):
+    # for idx in range(1):
         print(f'Calculating pc {idx}...')
         pc = read_pc(idx, COLORS['blue'])
         pc_lla = get_lla(idx)
@@ -193,12 +212,17 @@ if __name__ == '__main__':
         print('new x, y, z', t)
         pc_rpy = get_rpy(idx)
         R = rotate(pc_rpy)
-        mat_trans = rot_trans(R, np.asarray(pc.points), t - t0)
+        print(f'rotation: \n{R}')
+        transl = t - t0
+        print(f'translation: \n{transl}')
+        mat_trans = rot_trans(R, np.asarray(pc.points), transl)
+        print(f'translation and rotation matrix: \n{mat_trans}')
         new_pc = gen_new_pc(pc, mat_trans)
+        pc2global(idx, new_pc)
         all_pcs.append(new_pc)
         all_pcs_points.append(np.asarray(new_pc.points))
-    compl_map_arr = mult_to_one(all_pcs_points)
-    compl_map = gen_map(compl_map_arr)
+    # compl_map_arr = mult_to_one(all_pcs_points)
+    # compl_map = gen_map(compl_map_arr)
     # show_pc([(compl_map, 'blue')])
-    show_pc([(all_pcs[0], 'black'), (all_pcs[1], 'red'), (all_pcs[2], 'green'),
-             (compl_map, 'blue')])
+    # show_pc([(all_pcs[0], 'black'), (all_pcs[1], 'red'), (all_pcs[2], 'green'),
+    #          (compl_map, 'blue')])

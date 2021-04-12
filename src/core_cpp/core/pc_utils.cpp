@@ -22,7 +22,7 @@ void readPointCloud(PointCloud &point, string infile) {
     string line;
     for (int i = 0; input.good() && i <= 7; i++) {
         getline(input, line);
-        if (i == 2) {
+        if (i == 3) {
             // get number of vertexes
             string output;
             smatch m;
@@ -41,7 +41,8 @@ void readPointCloud(PointCloud &point, string infile) {
     for (size_t i = 0; input.good() && !input.eof(); i++) {
         getline(input, line);   
         istringstream in(line);
-        if (!input.eof()) in >> point.pts[i].x >> point.pts[i].y >> point.pts[i].z >> point.pts[i].intensity;
+        if (!input.eof()) in >> point.pts[i].x >> point.pts[i].y >> point.pts[i].z;
+        // if (!input.eof()) in >> point.pts[i].x >> point.pts[i].y >> point.pts[i].z >> point.pts[i].intensity;
     }
     input.close();
 
