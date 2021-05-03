@@ -1,6 +1,6 @@
-# Point Cloud Lib for Motion Detection
+# Point Cloud Registration
 
-Detect object's motion on point clouds captured from LIDAR.
+Method to perform point cloud registration with reduce total points length.
 
 ## Data
 
@@ -8,29 +8,33 @@ Detect object's motion on point clouds captured from LIDAR.
 
 ## Requirements
 
+- GCC 9.3.0+
 - Python 3.7+
 - PCL 1.10
 - VTK 9.0
-- Cython 0.29
 
-## Setup
+## Install and Run (CPP)
 
 ```bash
-$ export BASE_PATH="[YOUR_BASE_PATH]"  # e.g. /home/user/data/2011_09_26/2011_09_26_drive_0001_extract
+$ cd src/core_cpp
+$ mkdir build;cd build
+$ cmake ..
+$ make
+$ ./pc_encoder
+```
+
+## Install and Run (Python)
+
+```bash
 $ python3 -m venv venv
 $ . venv/bin/activate
+$ pip install -r requirements.txt
+$ export BASE_DIR="[YOUR_BASE_PATH]"  # e.g. /home/user/data/2011_09_26_drive_0001
+$ cd src/core_py/oxt2pose
+$ python main.py
 ```
 
-## Run
-
-```bash
-$ python kitti2ply2pcd.py  # transform all kitti format to pcd data format
-$ python kitti_struct.py  # get lat and lon from timestamps from velodyne's data
-```
-
-## File Structure
-
-- Before running `kitti2ply2pcd`:
+## Expected File Structure on Kitti
 
 ```bash
 └── [DATE]
@@ -47,41 +51,6 @@ $ python kitti_struct.py  # get lat and lon from timestamps from velodyne's data
     │   │   └── data
     │   └── velodyne_points
     │       ├── data
-    └── [DATE]_drive_0001_sync
-        ├── image_00
-        │   └── data
-        ├── image_01
-        │   └── data
-        ├── image_02
-        │   └── data
-        ├── image_03
-        │   └── data
-        ├── oxts
-        │   └── data
-        └── velodyne_points
-            └── data
-```
-
-- After running `kitti2ply2pcd`:
-
-```bash
-└── [DATE]
-    ├── [DATE]_drive_0001_extract
-    │   ├── vtx.txt  # total vertexes from velodyne
-    │   ├── image_00
-    │   │   └── data
-    │   ├── image_01
-    │   │   └── data
-    │   ├── image_02
-    │   │   └── data
-    │   ├── image_03
-    │   │   └── data
-    │   ├── oxts
-    │   │   └── data
-    │   └── velodyne_points
-    │       ├── data  # original data points
-    │       ├── data_pcd  # kitti data in pcd format 
-    │       └── data_ply  # kitti data in ply format
     └── [DATE]_drive_0001_sync
         ├── image_00
         │   └── data

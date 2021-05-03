@@ -8,12 +8,12 @@
 using namespace std;
 using namespace nanoflann;
 
-string DATA_PATH = "/home/dayoff/codes/point_cloud_lib/data/global/";
-string INNOV_PATH = "/home/dayoff/codes/point_cloud_lib/data/innovation/";
-string REF_PATH = "/home/dayoff/codes/point_cloud_lib/data/reference/";
+string DATA_PATH = "../../../data/global/";
+string INNOV_PATH = "../../../data/innovation/";
+string REF_PATH = "../../../data/reference/";
 float RADIUS_THRESHOLD = 0.2;
 int NZEROS = 10;
-int PC_SIZE = 2;
+int PC_SIZE = 107;
 
 
 PointCloud readNextPC(int index) {
@@ -83,12 +83,14 @@ PointCloud kdtreeSearch(PointCloud &cloud_1, PointCloud &cloud_2) {
 	return pc_innov;
 }
 
+
 void savePointCloudCtrl(int idx, PointCloud &pc, string path) {
 	string idx_str = to_string(idx);
 	string outfile = path + string(NZEROS - idx_str.length(), '0').append(idx_str).append(".ply");
 	cout << "Saving output file to " << outfile << endl;
 	savePointCloud(pc, outfile);
 }
+
 
 PointCloud pcl_to_pc(pcl::PointCloud< pcl::PointXYZ > pc_pcl) {
 	PointCloud cloud;
@@ -103,6 +105,7 @@ PointCloud pcl_to_pc(pcl::PointCloud< pcl::PointXYZ > pc_pcl) {
 	return cloud;
 }
 
+
 pcl::PointCloud< pcl::PointXYZ > pc_to_pcl(PointCloud pc) {
 	pcl::PointCloud< pcl::PointXYZ > cloud;
 	cloud.points.resize(pc.pts.size());
@@ -115,6 +118,7 @@ pcl::PointCloud< pcl::PointXYZ > pc_to_pcl(PointCloud pc) {
 
 	return cloud;
 }
+
 
 PointCloud makeRef(PointCloud pc_ref, PointCloud pc_cur) {
 	pcl::PointCloud< pcl::PointXYZ > pcl_pc_ref, pcl_pc_cur, pcl_new_ref;
@@ -132,6 +136,7 @@ PointCloud makeRef(PointCloud pc_ref, PointCloud pc_cur) {
 
 	return new_ref;
 }
+
 
 int main() {
 	PointCloud old_pc_ref, pc_ref, pc_cur, pc_innov;

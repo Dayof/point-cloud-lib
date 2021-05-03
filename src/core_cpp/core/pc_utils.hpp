@@ -11,7 +11,7 @@ using namespace std;
 
 struct PointCloud {
 
-    struct Point { float x, y, z, xy, yz, xz, intensity; };
+    struct Point { float x, y, z; };
 
     vector< Point > pts;
 
@@ -57,7 +57,7 @@ struct PCQueue {
                 ref_pc.pts[i].x = pc_points[i].x;
                 ref_pc.pts[i].y = pc_points[i].y;
                 ref_pc.pts[i].z = pc_points[i].z;
-                ref_pc.pts[i].intensity = pc_points[i].intensity;
+                // ref_pc.pts[i].intensity = pc_points[i].intensity;
             }
             cur_pc_ref.pop();
         }

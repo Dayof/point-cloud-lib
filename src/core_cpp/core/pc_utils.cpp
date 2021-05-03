@@ -75,7 +75,7 @@ PointCloud fromIdxToPointCloud(PointCloud &old_pc, vector<int> &ref_idx) {
             pts_vec.x = old_pc.kdtree_get_pt(idx, 0);
             pts_vec.y = old_pc.kdtree_get_pt(idx, 1);
             pts_vec.z = old_pc.kdtree_get_pt(idx, 2);
-            pts_vec.intensity = old_pc.kdtree_get_pt(idx, 3);
+            // pts_vec.intensity = old_pc.kdtree_get_pt(idx, 3);
             new_pc.pts.push_back(pts_vec);
         }
     }
@@ -96,14 +96,13 @@ void savePointCloud(PointCloud &point, string outfile) {
     output << "property float x" << endl;
     output << "property float y" << endl;
     output << "property float z" << endl;
-    output << "property float reflect_coeff" << endl;
+    // output << "property float reflect_coeff" << endl;
     output << "end_header" << endl;
 
     for ( auto local_point: point.pts ) {
         output << local_point.x << " " 
                 << local_point.y << " "
-                << local_point.z << " " 
-                << local_point.intensity << endl;
+                << local_point.z << endl;
     }
 
     output.close();
