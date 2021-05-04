@@ -3,7 +3,7 @@
 
 #include <pcl/registration/icp.h>
 #include <pcl/point_types.h>
-#include <ctime>	
+#include <ctime>
 
 using namespace std;
 using namespace nanoflann;
@@ -60,19 +60,9 @@ PointCloud kdtreeSearch(PointCloud &cloud_1, PointCloud &cloud_2) {
 									   	cloud_2.kdtree_get_pt(i, 2)};
 			const size_t n_matches = index_pc_1.radiusSearch(&query_pt[0], search_radius, ret_matches, params);
 
-			// cout << "p = " << query_pt[0] << ", " << query_pt[1] << ", " << query_pt[2] << endl;
-			// cout << "radius = " << search_radius << " -> " << n_matches << " matches"<< endl;
 			if (n_matches == 0) {
-				// cout << "No matches found for point p" << endl;
 				intersec_idx[i] = 1;
 				intersec_counter++;
-			} else {
-				// cout << "First -> idx[0] = " << ret_matches[0].first << " dist[0] = " << ret_matches[0].second << endl;
-				// for (size_t i = 0; i < n_matches; i++) {
-				// 	if (ret_matches[i].second <= RADIUS_THRESHOLD) {
-				// 		intersec_idx[ret_matches[i].first] = 1;
-				// 	}
-				// }
 			}
 		}
 
@@ -140,8 +130,6 @@ PointCloud makeRef(PointCloud pc_ref, PointCloud pc_cur) {
 
 int main() {
 	PointCloud old_pc_ref, pc_ref, pc_cur, pc_innov;
-	// PCQueue pc_ref;
-	// pc_ref.push(n, pc_cur);
 
 	int n = 0;
 	cout << endl << "Reading PC: " << n << endl;
@@ -178,9 +166,6 @@ int main() {
 		cout << "old_pc_ref size: " <<  old_pc_ref.pts.size() << endl;
 		cout << "pc_innov size: " <<  pc_innov.pts.size() << endl;
 		cout << "new pc_ref size: " <<  pc_ref.pts.size() << endl;
-
-		// pc_ref = makeICP(pc_ref, pc_innov);
-		// pc_ref.push(n, pc_innov);
 	}
 
 	cout << "Program finished." << endl;

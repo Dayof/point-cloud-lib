@@ -17,6 +17,7 @@ Method to perform point cloud registration with reduce total points length.
 
 ```bash
 $ cd src/core_cpp
+$ make mkdirs
 $ mkdir build;cd build
 $ cmake ..
 $ make

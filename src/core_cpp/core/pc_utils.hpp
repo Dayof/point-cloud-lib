@@ -4,7 +4,6 @@
 #include <iostream>
 #include <cstdlib>
 #include <vector>
-#include <queue>
 
 using namespace std;
 
@@ -33,40 +32,7 @@ struct PointCloud {
     bool kdtree_get_bbox(BBOX& /* bb */) const { return false; }
 };
 
-struct PCQueue {
 
-    queue<pair<int, PointCloud>> pc_refs;
-
-    void push(int index, PointCloud &point) {
-        pair <int, PointCloud> new_pc_ref (index, point);
-        pc_refs.push(new_pc_ref);
-        cout << "PC " << index << " added to queue reference." << endl;
-    }
-
-    PointCloud points() {
-        queue<pair<int, PointCloud>> cur_pc_ref = pc_refs;
-        PointCloud ref_pc;
-        while (!cur_pc_ref.empty()) {
-            vector<PointCloud::Point> pc_points = cur_pc_ref.front().second.pts;
-            cout << "PC size: " << pc_points.size() << endl;
-            cout << "Resizing PCQueue from " << ref_pc.pts.size()
-                 << " to " << pc_points.size() << endl;
-            size_t last_idx = ref_pc.pts.size();
-            ref_pc.pts.resize(ref_pc.pts.size() + pc_points.size());
-            for (size_t i = last_idx; i <= ref_pc.pts.size(); ++i) {
-                ref_pc.pts[i].x = pc_points[i].x;
-                ref_pc.pts[i].y = pc_points[i].y;
-                ref_pc.pts[i].z = pc_points[i].z;
-                // ref_pc.pts[i].intensity = pc_points[i].intensity;
-            }
-            cur_pc_ref.pop();
-        }
-        cout << "PC ref with " << ref_pc.kdtree_get_point_count() << " points." << endl;
-        return ref_pc;
-    }
-};
-
-vector <int> getPointsInnov(PointCloud &point, vector <int> &intersec_vec);
 PointCloud fromIdxToPointCloud(PointCloud &old_pc, vector<int> &ref_idx);
 
 void readPointCloud(PointCloud &point, string infile);

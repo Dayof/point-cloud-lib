@@ -42,7 +42,6 @@ void readPointCloud(PointCloud &point, string infile) {
         getline(input, line);   
         istringstream in(line);
         if (!input.eof()) in >> point.pts[i].x >> point.pts[i].y >> point.pts[i].z;
-        // if (!input.eof()) in >> point.pts[i].x >> point.pts[i].y >> point.pts[i].z >> point.pts[i].intensity;
     }
     input.close();
 
@@ -51,31 +50,15 @@ void readPointCloud(PointCloud &point, string infile) {
 }
 
 
-vector <int> getPointsInnov(PointCloud &point, vector <int> &intersec_vec) {
-    vector <int> total_vec, diff;
-
-    for (size_t i = 0; i <= point.kdtree_get_point_count(); ++i)
-        total_vec.push_back(i);
-
-    set_difference(total_vec.begin(), total_vec.end(),
-                   intersec_vec.begin(), intersec_vec.end(),
-                   inserter(diff, diff.begin()));
-
-    return diff;
-}
-
-
 PointCloud fromIdxToPointCloud(PointCloud &old_pc, vector<int> &ref_idx) {
     PointCloud new_pc;
     new_pc.pts.reserve(ref_idx.size());
     for (size_t idx = 0; idx <= ref_idx.size(); ++idx) {
         if (ref_idx[idx]) {
-            // cout << "point: " << idx << endl;
             PointCloud::Point pts_vec;
             pts_vec.x = old_pc.kdtree_get_pt(idx, 0);
             pts_vec.y = old_pc.kdtree_get_pt(idx, 1);
             pts_vec.z = old_pc.kdtree_get_pt(idx, 2);
-            // pts_vec.intensity = old_pc.kdtree_get_pt(idx, 3);
             new_pc.pts.push_back(pts_vec);
         }
     }
@@ -96,7 +79,6 @@ void savePointCloud(PointCloud &point, string outfile) {
     output << "property float x" << endl;
     output << "property float y" << endl;
     output << "property float z" << endl;
-    // output << "property float reflect_coeff" << endl;
     output << "end_header" << endl;
 
     for ( auto local_point: point.pts ) {
