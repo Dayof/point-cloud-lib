@@ -2,6 +2,7 @@
 #define __PC_UTILS_HPP__
 
 #include <iostream>
+#include <fstream>
 #include <cstdlib>
 #include <vector>
 
@@ -31,7 +32,6 @@ struct PointCloud {
     template <class BBOX>
     bool kdtree_get_bbox(BBOX& /* bb */) const { return false; }
 };
-
 
 PointCloud fromIdxToPointCloud(PointCloud &old_pc, vector<int> &ref_idx);
 

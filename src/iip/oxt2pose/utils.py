@@ -4,7 +4,7 @@ import open3d as o3d
 import numpy as np
 import os
 
-BASE = Path().resolve().parents[2]
+BASE = Path().resolve().parents[0]
 DATA_PATH = BASE / 'data'
 GLOBAL_PLY_PATH = DATA_PATH / 'global'
 

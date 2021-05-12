@@ -1,0 +1,23 @@
+	Command being timed: "python icp/global.py -n 36"
+	User time (seconds): 8855.12
+	System time (seconds): 1901.17
+	Percent of CPU this job got: 383%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 46:42.89
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 542968
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 2938338
+	Voluntary context switches: 10469
+	Involuntary context switches: 3286939
+	Swaps: 0
+	File system inputs: 3888
+	File system outputs: 74232
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

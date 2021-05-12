@@ -34,6 +34,12 @@ def prepare_dataset(file_1, file_2, voxel_size, trans_init):
     target_down, target_fpfh = preprocess_point_cloud(target, voxel_size)
     return source, target, source_down, target_down, source_fpfh, target_fpfh
 
+def prepare_novoxel_dataset(file_1, file_2):
+    print(":: Load two point clouds and disturb initial pose.")
+    source = o3d.io.read_point_cloud(file_1)
+    target = o3d.io.read_point_cloud(file_2)
+    return source, target
+
 def icp_po2po(source, target, threshold, trans_init):
     print("Apply point-to-point ICP")
     reg_p2p = o3d.registration.registration_icp(source, target, threshold, trans_init,
@@ -73,26 +79,27 @@ def start():
     file_1 = os.path.join(PCD_PATH, os.listdir(PCD_PATH)[0])
     file_2 = os.path.join(PCD_PATH, os.listdir(PCD_PATH)[1])
 
-    voxel_size, threshold = 0.8, 100
+    threshold = 100
     trans_init = np.identity(4, dtype=float) 
-    source, target, source_down, target_down, source_fpfh, target_fpfh = prepare_dataset(file_1, file_2, voxel_size, trans_init)
+    # source, target, source_down, target_down, source_fpfh, target_fpfh = prepare_dataset(file_1, file_2, voxel_size, trans_init)
+    source, target = prepare_novoxel_dataset(file_1, file_2)
 
     print("Initial alignment")
     evaluation = o3d.registration.evaluate_registration(
         source, target, threshold, trans_init)
     print(evaluation)
 
-    new_transf = execute_fast_global_registration(
-        source_down, target_down, source_fpfh, target_fpfh, voxel_size)
+    # new_transf = execute_fast_global_registration(
+    #     source_down, target_down, source_fpfh, target_fpfh, voxel_size)
+    # visu.plot_reg(source, target, new_transf)
+
+    new_transf = icp_po2po(source, target, threshold, trans_init)
     visu.plot_reg(source, target, new_transf)
 
-    new_transf = icp_po2po(source_down, target_down, threshold, trans_init)
-    visu.plot_reg(source, target, new_transf)
-
-    new_transf = icp_po2pl(source_down, target_down, threshold, trans_init)
-    visu.plot_reg(source, target, new_transf)
+    # new_transf = icp_po2pl(source_down, target_down, threshold, trans_init)
+    # visu.plot_reg(source, target, new_transf)
 
 
 if __name__ == "__main__":
-    test_plot()
-    # start()
+    # test_plot()
+    start()

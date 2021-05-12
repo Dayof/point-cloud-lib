@@ -8,9 +8,9 @@
 using namespace std;
 using namespace nanoflann;
 
-string DATA_PATH = "../../../data/global/";
-string INNOV_PATH = "../../../data/innovation/";
-string REF_PATH = "../../../data/reference/";
+string DATA_PATH = "../../../../data/global/";
+string INNOV_PATH = "../../../../data/innovation/";
+string REF_PATH = "../../../../data/reference/";
 float RADIUS_THRESHOLD = 0.2;
 int NZEROS = 10;
 int PC_SIZE = 107;
@@ -131,6 +131,10 @@ PointCloud makeRef(PointCloud pc_ref, PointCloud pc_cur) {
 int main() {
 	PointCloud old_pc_ref, pc_ref, pc_cur, pc_innov;
 
+	ofstream out_file;
+	string n_str;
+	out_file.open("../points_info.csv");
+
 	int n = 0;
 	cout << endl << "Reading PC: " << n << endl;
 	pc_cur = readNextPC(n);
@@ -142,7 +146,14 @@ int main() {
 	cout << endl << "PCs Metadata: " << endl;
 	cout << "pc_ref size: " <<  pc_ref.pts.size() << endl;
 	cout << "pc_cur size: " <<  pc_cur.pts.size() << endl;
-	cout << "pc_ref size: " <<  pc_ref.pts.size() << endl;
+	cout << "pc_innov size: " << 0 << endl;
+
+	out_file << "idx, file, points, innov, ref" << endl;
+
+	n_str = to_string(n);
+	out_file << n << ", " << string(NZEROS - n_str.length(), '0').append(n_str).append(".ply")
+		<< ", " << pc_cur.pts.size() << ", " << pc_ref.pts.size() << ", "
+		<< pc_ref.pts.size() << endl;
 
 	for (n = 1; n <= PC_SIZE; ++n) {
 		cout << endl << "Reading PC: " << n << endl;
@@ -166,8 +177,14 @@ int main() {
 		cout << "old_pc_ref size: " <<  old_pc_ref.pts.size() << endl;
 		cout << "pc_innov size: " <<  pc_innov.pts.size() << endl;
 		cout << "new pc_ref size: " <<  pc_ref.pts.size() << endl;
+
+		n_str = to_string(n);
+		out_file << n << ", " << string(NZEROS - n_str.length(), '0').append(n_str).append(".ply")
+			<< ", " << pc_cur.pts.size() << ", " << pc_innov.pts.size() << ", "
+			<< pc_ref.pts.size() << endl;
 	}
 
+	out_file.close();
 	cout << "Program finished." << endl;
 
 	return 0;

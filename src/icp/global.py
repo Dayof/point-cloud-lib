@@ -1,11 +1,18 @@
-import os
+from pathlib import Path
+from tqdm import tqdm
 import open3d as o3d 
 import numpy as np
-import visualization as visu
+import click
+import os
 
-BASE_PATH = os.getenv('BASE_PATH', False)
-VELODYNE_PATH = os.path.join(BASE_PATH, 'velodyne_points')
-PCD_PATH = os.path.join(VELODYNE_PATH, 'data_pcd')
+BASE_DIR = os.getenv('BASE_DIR', '/home/dayoff/data/2011_09_26_drive_0001')
+DATA_SYNC_DIR = os.path.join(BASE_DIR, '2011_09_26_drive_0001_sync')
+PC_PATH = os.path.join(DATA_SYNC_DIR, 'velodyne_points', 'data')
+
+BASE_DATA = Path().resolve().parents[0]
+DATA_PATH = BASE_DATA / 'data'
+GLOBAL_PLY_PATH = DATA_PATH / 'icp_global'
+
 
 def pairwise_registration(source, target, max_correspondence_distance_coarse,
                           max_correspondence_distance_fine):
@@ -56,32 +63,67 @@ def full_registration(pcds, max_correspondence_distance_coarse,
                                                    uncertain=True))
     return pose_graph
 
-def load_point_clouds(all_files, n_files, voxel_size=0.0):
-    colours = [[1, 0.706, 0], [0, 0.651, 0.929], [0, 1, 0.5]]
+
+def idx2filename(idx, format):
+    return f'{idx}'.zfill(10) + f'.{format}'
+
+
+def load_point_clouds(n_files):
     pcds = []
-    radius_normal = voxel_size * 2
     for i in range(n_files):
-        file_path = os.path.join(PCD_PATH, all_files[i])
-        print(file_path)
-        pcd = o3d.io.read_point_cloud(file_path)
+        filename = idx2filename(i, 'bin')
+        filepath = os.path.join(PC_PATH, filename)
+        print(filepath)
+        data = np.fromfile(filepath, dtype=np.float32, count=-1).reshape([-1,4])
+
+        new_pcd = o3d.geometry.PointCloud()
+        new_pcd.points = o3d.utility.Vector3dVector(data[:,:3])
+
+        pcds.append(new_pcd)
+
+    return pcds
+
+
+def pcd2voxels(pcds, voxel_size=0.0):
+    radius_normal = voxel_size * 2
+    pcds_down = []
+    for pcd in pcds:
         pcd_down = pcd.voxel_down_sample(voxel_size=voxel_size)
         print(":: Estimate normal with search radius %.3f." % radius_normal)
         pcd_down.estimate_normals(
             o3d.geometry.KDTreeSearchParamHybrid(radius=radius_normal, max_nn=30))
-        # pcd_down.paint_uniform_color(colours[i])
-        pcds.append(pcd_down)
-    return pcds
+        pcds_down.append(pcd_down)
+    return pcds_down
 
-def start():
+
+def save_pcd(idx, pcd):
+    print('Saving icp points to ply format...')
+    global_ply_filename = idx2filename(idx, 'ply')
+    global_ply_path = GLOBAL_PLY_PATH / global_ply_filename
+    o3d.io.write_point_cloud(str(global_ply_path), pcd, write_ascii=True)
+
+
+def save_pcds(pcds):
+    print('Saving icp points to ply format...')
+    for idx, pcd in tqdm(pcds.items()):
+        global_ply_filename = idx2filename(idx, 'ply')
+        global_ply_path = GLOBAL_PLY_PATH / global_ply_filename
+        o3d.io.write_point_cloud(str(global_ply_path), pcd, write_ascii=True)
+
+
+@click.group(invoke_without_command=True)
+@click.option('-n', '--num-pc', required=True, type=int,
+              help='Number of Point Clouds to register.')
+def start(num_pc):
     voxel_size = 0.1
-    all_files = sorted(os.listdir(PCD_PATH))
-    total_files = len(all_files)
+    all_files = sorted(os.listdir(PC_PATH))
+    total_files = num_pc
     print('Total files :', total_files)
-    # for nr in range(total_files):
+
     print(f'------- GENERATING GLOBAL WITH {total_files} FILES -------')
-    pcds_down = load_point_clouds(all_files, total_files, voxel_size)
-    # o3d.visualization.draw_geometries(pcds_down)
-    
+    pcds = load_point_clouds(total_files)
+    pcds_down = pcd2voxels(pcds, voxel_size)
+
     print("Full registration ...")
     max_correspondence_distance_coarse = voxel_size * 15
     max_correspondence_distance_fine = voxel_size * 1.5
@@ -104,17 +146,18 @@ def start():
     for point_id in range(len(pcds_down)):
         print(pose_graph.nodes[point_id].pose)
         pcds_down[point_id].transform(pose_graph.nodes[point_id].pose)
-    # o3d.visualization.draw_geometries(pcds_down)
 
-    pcds = load_point_clouds(all_files, total_files, voxel_size)
+    pcds = load_point_clouds(total_files)
+    pcds_down = pcd2voxels(pcds, voxel_size)
     pcd_combined = o3d.geometry.PointCloud()
     
-    for point_id in range(len(pcds)):
-        pcds[point_id].transform(pose_graph.nodes[point_id].pose)
-        pcd_combined += pcds[point_id]
+    for point_id in range(len(pcds_down)):
+        pcds_down[point_id].transform(pose_graph.nodes[point_id].pose)
+        pcd_combined += pcds_down[point_id]
     pcd_combined_down = pcd_combined.voxel_down_sample(voxel_size=voxel_size)
-    o3d.io.write_point_cloud(f"multiway_registration_{len(pcds)}.pcd", pcd_combined_down)
-    # o3d.visualization.draw_geometries([pcd_combined_down])
+    save_pcd(total_files - 1, pcd_combined_down)
+
+    print(f"Finished ICP registration with {num_pc} files.")
 
 if __name__ == "__main__":
     start()

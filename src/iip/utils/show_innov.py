@@ -3,7 +3,7 @@ import numpy as np
 from pathlib import Path
 
 # get data base path to collect the point clouds
-BASE = Path().resolve().parents[1]
+BASE = Path().resolve().parents[0]
 DATA_PATH = BASE / 'data'
 print(DATA_PATH)
 COLORS = {'green': [0, 255, 0], 'red': [255, 0, 0], 'blue': [0, 0, 255],
@@ -100,7 +100,7 @@ if __name__ == "__main__":
     # show_pc([(pc_innov_1, 'red'), (pc_innov_2, 'green'),
     #          (pc_innov_3, 'blue'), (pc_innov_4, 'black')])
     
-    # pc_1 = load_point_cloud('0000000000.ply', 'global')
+    # pc_1 = load_point_cloud('0000000001.ply', 'global')
     # pc_1 = load_point_cloud('0000000001.ply', 'global')
     # pc_3 = load_point_cloud('0000000002.ply', 'global')
     # pc_2 = load_point_cloud('0000000110.ply', 'global')
@@ -110,7 +110,7 @@ if __name__ == "__main__":
     # pc_3 = load_point_cloud('0000000002.ply', 'kitti_ply')
     # pc_4 = load_point_cloud('0000000110.ply', 'kitti_ply')
 
-    # pc_1 = load_point_cloud('0000000000.ply', 'innovation')
+    pc_1 = load_point_cloud('0000000000.ply', 'innovation')
     # pc_1 = load_point_cloud('0000000000.ply', 'reference')
     # pc_2 = load_point_cloud('0000000008.ply', 'reference')
     # pc_3 = load_point_cloud('0000000016.ply', 'reference')
@@ -118,9 +118,10 @@ if __name__ == "__main__":
     # pc_1 = load_point_cloud('0000000000.ply', 'reference')
     # pc_2 = load_point_cloud('0000000020.ply', 'reference')
     # pc_3 = load_point_cloud('0000000050.ply', 'reference')
-    pc_1 = load_point_cloud('0000000025.ply', 'reference')
+    # pc_1 = load_point_cloud('0000000000.ply', 'icp_global')
+    # pc_2 = load_point_cloud('0000000013.ply', 'icp_global')
 
-    show_pc([(pc_1, 'red')])
+    show_pc([(pc_1, 'soft_blue')])
     # show_pc([(pc_1, 'red'), (pc_2, 'blue')])
     # show_pc([(pc_1, 'red'), (pc_2, 'blue'), (pc_3, 'black')])
     # show_pc([(pc_1, 'red'), (pc_2, 'blue'), (pc_3, 'black'), (pc_4, 'soft_blue')])

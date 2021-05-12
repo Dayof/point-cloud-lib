@@ -47,7 +47,7 @@ def get(oxts):
         # rotation matrix (OXTS RT3000 user manual, page 71/92)
         rx = oxts[i][3]; # roll
         ry = oxts[i][4]; # pitch
-        rz = oxts[i][5]; # heading 
+        rz = oxts[i][5]; # yaw/heading 
         print('[CONVERT]\nrx, ry, rz:', rx, ry, rz)
 
         # base => nav  (level oxts => rotated oxts)
