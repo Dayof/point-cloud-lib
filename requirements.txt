@@ -1,7 +1,7 @@
 Cython==0.29.19
 Click==7.0
 matplotlib==3.3.0
-numpy==1.18.4
+numpy==1.22.0
 open3d==0.10.0.0
 requests==2.22.0
 tqdm==4.48.0
